@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>노드 서버</title>
+</head>
+<body>
+	<h2>노드서버</h2>
+	<a href="member/register">회원가입</a><br />
+	<div id="logindisp"></div>
+	<a href="item/all">전체보기</a><br />
+	<a href="item/list">페이징</a><br />
+	<a href="#" id="iteminsertbtn">아이템 삽입</a><br />
+</body>
+
+<script>
+	var logindisp = document.getElementById("logindisp");
+	var membernickname = sessionStorage["membernickname"];
+
+	if(membernickname != undefined){
+		logindisp.innerHTML = membernickname + "님 환영합니다.<br />";
+		logindisp.innerHTML += "<a href='#' onclick='logout()'>로그아웃</a><br />";
+	}else{
+		logindisp.innerHTML += "<a href='member/login'>로그인</a><br />";
+	}
+		
+	function logout(){
+		sessionStorage.removeItem("memberid");
+		sessionStorage.removeItem("membernickname");
+		location.href = "./";
+	}
+	
+	document.getElementById("iteminsertbtn").addEventListener('click', function(){
+		if(membernickname == undefined){
+			alert("로그인을 해야 데이터 삽입이 가능합니다.");
+			location.href = "member/login";
+		}else{
+			location.href = "item/insert";
+		}
+	})
+</script>
+</html>

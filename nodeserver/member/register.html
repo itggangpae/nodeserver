@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>회원가입</title>
+<style>
+form {
+	width: 60em;
+	border: 1px solid #666;
+	border-radius: 10px;
+	box-shadow: .2em .2em .5em #999;
+	background-color: #d0e9f6;
+	padding: 1em;
+	overflow: hidden;
+}
+	
+ul {
+	list-style-type: none;
+}
+
+ul li {
+	clear: both;
+}
+
+label {
+	display: block;
+	float: left;
+	width: 10em;
+	text-align: right;
+	margin-right: .5em;
+	color: #04699d;
+}
+
+input.textinput {
+	width: 30em;
+	height: 2em;
+	border: 1px solid #666;
+	margin-bottom: 1em;
+	display: block;
+	float: left;
+}
+input.fileinput {
+	width: 15em;
+	height: 2em;
+	border: 1px solid #666;
+	margin-bottom: 1em;
+	margin-right: 1em;
+	display: block;
+	float: left;
+}
+
+input.textinput, textarea {
+	font-family: Georgia, "Times New Roman", Times, serif;
+	font-size: .875em;
+}
+
+input[type="submit"], input[type="button"] {
+	display: block;
+	width: 10em;
+	height: 2em;
+	float: left;
+	background: white;
+	font-size: inherit;
+	border: 1px solid #04699d;
+	border-radius: 4px;
+	box-shadow: 2px 2px 3px rgba(0, 0, 0, .5);
+	margin-top: 1em;
+	margin-left: 23em;
+	color: #C00;
+}
+
+input[type="submit"] {
+	margin-left: 5em;
+}
+
+span {
+	color: red;
+}
+
+@media screen and (max-width: 960px) {
+	form {
+		width: 20em;
+		border: 1px solid #666;
+		border-radius: 10px;
+		box-shadow: .2em .2em .5em #999;
+		background-color: #d0e9f6;
+		padding: 1em;
+		overflow: hidden;
+	}
+	label {
+		display: block;
+		float: left;
+		width: 4em;
+		text-align: right;
+		margin-right: .5em;
+		color: #04699d;
+	}
+	input.textinput {
+		width: 13em;
+		height: 2em;
+		border: 1px solid #666;
+		margin-bottom: 1em;
+	}
+	
+	input.textinput, textarea {
+		font-family: Georgia, "Times New Roman", Times, serif;
+		font-size: .875em;
+	}
+	
+	input[type="submit"], input[type="button"] {
+		display: block;
+		width: 10em;
+		height: 2em;
+		float: left;
+		background: white;
+		font-size: inherit;
+		border: 1px solid #04699d;
+		border-radius: 4px;
+		box-shadow: 2px 2px 3px rgba(0, 0, 0, .5);
+		margin-top: 1em;
+		color: #C00;
+		margin-left: 4em;
+	}
+}
+</style>
+</head>
+<body>
+	
+	<form method="post" id="registerform">
+		<h2 align='center'>회원가입</h2>
+		<ul>
+			<li>
+				<label for="memberid">아이디</label> 
+				<input type="text" name="memberid" id="memberid" class="textinput"/> 
+				<span id="idspan"></span>
+			</li>
+			<li>
+				<label for="memberid">비밀번호</label> 
+				<input type="password" name="memberpw" id="memberpw" class="textinput"/>
+				<span id="pwspan"></span>
+			</li>
+			<li>
+				<label for="membernickname">별명</label> 
+				<input type="text" name="membernickname" id="membernickname" class="textinput"/>
+				<span id="nicknamespan"></span>
+			</li>
+			<li class="buttons">
+				<input type="button" id="registerbtn" value="회원가입" />
+			</li>
+		</ul>
+	</form>
+</body>
+
+<script>
+	var memberid = document.getElementById("memberid");
+	var memberpw = document.getElementById("memberpw");
+	var membernickname = document.getElementById("membernickname");
+
+	var idspan = document.getElementById("idspan");
+	var pwspan = document.getElementById("pwspan");
+	var nicknamespan = document.getElementById("nicknamespan");
+
+	var registerbtn = document.getElementById("registerbtn");
+
+	var registerform = document.getElementById("registerform");
+
+	var validationcheck = false;
+	memberid.addEventListener('focusout', function(e) {
+		// XMLHttpRequest 객체의 생성
+		const xhr = new XMLHttpRequest();
+		xhr.open('GET', 'idcheck?memberid=' + memberid.value);
+		xhr.send(null);
+		// XMLHttpRequest.readyState 프로퍼티가 변경(이벤트 발생)될 때마다 onreadystatechange 이벤트 핸들러가 호출된다.
+		xhr.onreadystatechange = function(e) {
+			// readyStates는 XMLHttpRequest의 상태(state)를 반환
+			// readyState: 4 => DONE(서버 응답 완료)
+			if (xhr.readyState !== XMLHttpRequest.DONE)
+				return;
+			// status는 response 상태 코드를 반환 : 200 => 정상 응답
+			if (xhr.status === 200) {
+				const result = JSON.parse(xhr.responseText).result;
+				if (result == true) {
+					validationcheck = true;
+					idspan.innerHTML = "사용 가능한 아이디입니다."
+				} else {
+					validationcheck = false;
+					idspan.innerHTML = "사용 불가능한 아이디입니다."
+				}
+			} else {
+				console.log('Error!');
+				validationcheck = false
+			}
+		};
+	})
+
+	registerbtn.addEventListener('click', function(e) {
+				// XMLHttpRequest 객체의 생성
+				const xhr = new XMLHttpRequest();
+				xhr.open('GET', 'nicknamecheck?membernickname='
+						+ membernickname.value);
+				xhr.send(null);
+				// XMLHttpRequest.readyState 프로퍼티가 변경(이벤트 발생)될 때마다 onreadystatechange 이벤트 핸들러가 호출된다.
+				xhr.onreadystatechange = function(e) {
+					// readyStates는 XMLHttpRequest의 상태(state)를 반환
+					// readyState: 4 => DONE(서버 응답 완료)
+					if (xhr.readyState !== XMLHttpRequest.DONE)
+						return;
+					// status는 response 상태 코드를 반환 : 200 => 정상 응답
+					if (xhr.status === 200) {
+						const result = JSON.parse(xhr.responseText).result;
+						if (result == true) {
+							nicknamespan.innerHTML = "사용 가능한 별명입니다."
+							if(validationcheck == true ){
+							
+								const xhr = new XMLHttpRequest();
+								xhr.open('POST', 'register');
+								xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+								xhr.send("memberid=" + memberid.value + "&memberpw=" + memberpw.value + "&membernickname=" + membernickname.value);
+																
+								// XMLHttpRequest.readyState 프로퍼티가 변경(이벤트 발생)될 때마다 onreadystatechange 이벤트 핸들러가 호출된다.
+								xhr.onreadystatechange = function(e) {
+									if (xhr.readyState !== XMLHttpRequest.DONE)
+										return;
+									
+									// status는 response 상태 코드를 반환 : 200 => 정상 응답
+									if (xhr.status === 200) {
+										const result = JSON
+												.parse(xhr.responseText).result;
+										if (result == true) {
+											location.href = '../';
+										} else {
+											idspan.innerHTML = "회원 가입 실패"
+										}
+
+									} else {
+										console.log('Error!');
+										validationcheck = false
+									}
+								};
+							}
+
+						} else {
+							validationcheck = false;
+							nicknamespan.innerHTML = "사용 불가능한 별명입니다."
+						}
+					} else {
+						console.log('Error!');
+						validationcheck = false
+					}
+				};
+			})
+</script>
+</html>
+	
+
+</html>

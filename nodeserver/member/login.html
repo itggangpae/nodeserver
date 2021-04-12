@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>로그인</title>
+<meta name="viewport"
+	content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<style>
+input {
+	text-rendering: auto;
+	color: initial;
+	letter-spacing: normal;
+	word-spacing: normal;
+	text-transform: none;
+	text-indent: 0px;
+	text-shadow: none;
+	display: inline-block;
+	text-align: start;
+	-webkit-appearance: textfield;
+	background-color: white;
+	-webkit-rtl-ordering: logical;
+	cursor: text;
+	margin: 1em;
+	font: 400 13.3333px Arial;
+	padding: 1px 0px;
+	border-width: 2px;
+	border-style: inset;
+	border-color: initial;
+	border-image: initial;
+}
+
+body, button, input, select, td, textarea, th {
+	font-size: 13px;
+	line-height: 1.5;
+	-webkit-font-smoothing: antialiased;
+}
+
+.box_login {
+	width: 200px;
+	margin: 35px 0 0;
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	background-color: #fff;
+	box-sizing: border-box;
+}
+
+fieldset {
+	border: 1;
+}
+
+.btn_login {
+	margin: 20px 0 0;
+	width: 96px;
+	height: 48px;
+	border-radius: 3px;
+	font-size: 16px;
+	color: #fff;
+	background-color: #000;
+	text-align: center;
+	cursor:pointer;
+}
+
+#msgdisp {
+	color: red;
+	text-align: center;
+	font-size: 1.5em;
+}
+</style>
+</head>
+<body>
+	<form method="post" id="loginform">
+		<div class="box_login">
+			<fieldset>
+				<legend>로그인 정보 입력폼</legend>
+				<div id="msgdisp"></div>
+				<div class="inp_text">
+					<input type="text" id="memberid" name="memberid"
+						placeholder="아이디를 입력하세요!">
+				</div>
+				<div class="inp_text">
+					<input type="password" id="memberpw" name="memberpw"
+						placeholder="비밀번호를 입력하세요!">
+				</div>
+			</fieldset>
+		</div>
+		<input type="button" id="loginbtn" class="btn_login" value="로그인" />
+		<input type="button" id="mainbtn" class="btn_login" value="메인으로" />
+
+	</form>
+</body>
+<script>
+	var memberid = document.getElementById("memberid");
+	var memberpw = document.getElementById("memberpw");
+	var loginbtn = document.getElementById("loginbtn");
+	var mainbtn = document.getElementById("mainbtn");
+	var msgdisp = document.getElementById("msgdisp");
+	
+	loginbtn.addEventListener("click", function(e) {
+		const xhr = new XMLHttpRequest();
+		xhr.open('POST', 'login');
+		xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+		xhr.send("memberid=" + memberid.value + "&memberpw=" + memberpw.value);
+		// XMLHttpRequest.readyState 프로퍼티가 변경(이벤트 발생)될 때마다 onreadystatechange 이벤트 핸들러가 호출된다.
+		xhr.onreadystatechange = function(e) {
+			if(xhr.readyState !== XMLHttpRequest.DONE)
+				return;
+			// status는 response 상태 코드를 반환 : 200 => 정상 응답
+			if (xhr.status === 200) {
+				const result = JSON.parse(xhr.responseText).result;
+				if (result == true) {
+					sessionStorage["memberid"] = JSON.parse(xhr.responseText).member.memberid;
+					sessionStorage["membernickname"] = JSON.parse(xhr.responseText).member.membernickname;
+					location.href = "../";
+				} else {
+					msgdisp.innerHTML = "없는 아이디이거나 잘못된 비밀번호입니다.";
+					
+				}
+			} else {
+				msgdisp.innerHTML = "서버에 요청이 전달되지 않고 있습니다. 잠시 후에 다시 시도해주세요";
+			}
+		};
+	});
+	
+	mainbtn.addEventListener("click", function(e) {
+		location.href = "../";
+	});
+</script>
+
+</html>
