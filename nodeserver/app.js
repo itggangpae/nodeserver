@@ -1,3 +1,4 @@
+//필요한 라이브러리 가져오기
 const express = require('express');
 const morgan = require('morgan');
 const path = require('path');
@@ -5,7 +6,7 @@ const mysql = require('mysql');
 const multer = require('multer');
 const fs = require('fs');
 
-//서버 설정
+//서버 설정 - 포트 번호를 80번으로 설정 - 브라우저에서 포트 번호를 입력하지 않아도 
 const app = express();
 app.set('port', process.env.PORT || 80);
 
@@ -15,7 +16,7 @@ app.use(morgan('dev'));
 //정적 파일 사용 설정
 app.use(express.static('public'));
 
-//post 방식의 파라미터 읽기
+//post 방식의 파라미터 읽을 수 있도록 설정
 var bodyParser = require('body-parser')
 app.use( bodyParser.json() );       // to support JSON-encoded bodies
 app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
@@ -40,7 +41,8 @@ try {
 	console.error('img 폴더가 없으면 img 폴더를 생성합니다.');
 	fs.mkdirSync('public/img');
 }
-//파일 이름은 기본 파일 이름에 현재 시간을 추가해서 생성
+
+//파일 업로드 처리 - 파일 이름은 기본 파일 이름에 현재 시간을 추가해서 생성
 const upload = multer({
 	storage: multer.diskStorage({
 		destination(req, file, done) {
@@ -54,6 +56,8 @@ const upload = multer({
 	limits: { fileSize: 10 * 1024 * 1024 },
 });
 
+
+//데이터베이스 연결 설정 - 설정을 변경하셔야 합니다.
 var connection;
 function connect(){
 	connection = mysql.createConnection({
@@ -74,15 +78,18 @@ function connect(){
 	});
 }
 
+//데이터베이스 연결 해제
 function close(){
 	console.log('mysql connection close');
 	connection.end();
 }
 
+//회원 가입을 눌렀을 때 회원 가입 페이지로 이동하는 처리
 app.get('/member/register', (req, res) => {
 	  res.sendFile(path.join(__dirname, '/member/register.html'));
 });
 
+//id 중복 체크 처리
 app.get('/member/idcheck', (req, res) => {
 	//get 방식의 파라미터 가져오기
 	const memberid = req.query.memberid;
@@ -100,6 +107,7 @@ app.get('/member/idcheck', (req, res) => {
 	});
 });
 
+//회원 가입 처리
 app.get('/member/register', (req, res) => {
 	  res.sendFile(path.join(__dirname, '/member/register.html'));
 });
